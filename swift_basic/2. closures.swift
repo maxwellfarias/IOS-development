@@ -9,7 +9,7 @@
     func recebePrintName (printNameParam:()->String) {
         print(printNameParam())
     }
-          
+       //Quando uma funcao armazenada em uma variavel eh usada como um parametro, nao se usa '()'   
     recebePrintName(printNameParam: printName)
 
     //Armazenando uma funcao em uma variavel
