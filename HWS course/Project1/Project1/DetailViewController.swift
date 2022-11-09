@@ -20,6 +20,9 @@ class DetailViewController: UIViewController {
         
         title = selectedImage
         
+        //Cria um botao na barra de navegacao direita,barButtonSystemItem tras a opcao de escolher um icon; Action especifica o metodo que sera chamado que no caso sera a acao de compartilhar a foto.
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareTapped))
+        
         //torna o titulo pequeno
         navigationItem.largeTitleDisplayMode = .never
 
@@ -43,15 +46,29 @@ class DetailViewController: UIViewController {
         //mostra a barra de menu superior
         navigationController?.hidesBarsOnTap = false
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    //funcao que compartilha a foto
+    @objc func shareTapped () {
+        //pega a imagem exibida e converte-a para jpeg
+        guard let image = imageView.image?.jpegData(compressionQuality: 0.8) else {
+            print ("No image found")
+            return
+        }
+        
+        //Cria a atividade de compartilhamento da imagem, activityItems como primeiro parametro passa-se a image e nos outros campos no array da para colocar outras informacoes como uma string contendo o nome da imagem
+        let vc = UIActivityViewController(activityItems: [image, selectedImage!], applicationActivities: [])
+        
+        //Liga a atividade de compartilhamento ao botao
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        
+        //Mostra de fato a funcao de compartilhamento na tela
+        present(vc, animated: true)
+        
+        /*
+         Quando for clicado e realizado o compartilhamento da foto no app, tera a opcao de 'save image', se for selecioando essa opcao o app gerara um erro, pois o app tentara acessar tentara acessar a biblioteca do usuario para poder gravar a imagem la, mas isso nao eh permitido, a menos que o usuario conceda a permissao primeiro. Para resolver isso eh preciso editar o Info.Plist, adicionando uma linha -> Selecinando Photo 'Privacy - Library Additions Usage Description e no campo value sera colocado a mensagem que sera exibida para o usuario.
+         */
     }
-    */
+
+    
 
 }
