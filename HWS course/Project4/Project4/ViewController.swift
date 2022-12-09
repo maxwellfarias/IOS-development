@@ -29,6 +29,15 @@ class ViewController: UIViewController, WKNavigationDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        
+        //Cria uma URL atraves da string
+        let url = URL(string: "https://" + websites[0])!
+        //Carrega a site (IOS quer que seja acessado sites https)
+        webView.load(URLRequest(url: url))
+        //Habilita avancar e voltar paginas arrastando as bordas
+        webView.allowsBackForwardNavigationGestures = true
+     
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "open", style: .plain, target: self, action: #selector(openTapped))
         
         //Cria uma progressView padrao
@@ -40,7 +49,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
         
         //Adiciona um espaco flexivel empurrando os demais botoes da barra inferior a direita
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let refresh = UIBarButtonItem(barButtonSystemItem: .action, target: webView, action: #selector(webView.reload))
+        let refresh = UIBarButtonItem(barButtonSystemItem: .refresh, target: webView, action: #selector(webView.reload))
         
         //Adiciona o espaco e o botao de recarregar a pagina na barra inferior (botao de barra de progresso - espaco  - botao para recarregar)
         toolbarItems = [progressButton, spacer, refresh]
@@ -49,18 +58,12 @@ class ViewController: UIViewController, WKNavigationDelegate {
         
         
         //sera usado a observacao de valor chave (key value observing - KVO) a fim de usar na barra de progresso, a proprieade WKWebView.estimatedProgress tem um valor de 0 a 1 que sera usado para definir a progress bar, o metodo a seguir eh usado para observar esse valor.
-        //par 1: Quem eh o observador, par 2: propriedade a ser observada, par 3: Qual valor queremos (queremos o valor que acabou de ser definido, entao queremos o novo), par 4: Contexto
+        //paramegtro 1: Quem eh o observador, par 2: propriedade a ser observada, par 3: Qual valor queremos (queremos o valor que acabou de ser definido, entao queremos o novo), par 4: Contexto
         //#keyPath permite que o compilador verifique se o seu codigo esta correto, ou seja, se existe mesmo a propriedade estimatedProgress em WKWebView
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: .new, context: nil)
         
         
-           //Cria uma URL atraves da string
-           let url = URL(string: "https://" + websites[0])!
-           //Carrega a site (IOS quer que seja acessado sites https)
-           webView.load(URLRequest(url: url))
-           //Habilita avancar e voltar paginas arrastando as bordas
-           webView.allowsBackForwardNavigationGestures = true
-        
+         
         
        
     }
@@ -70,9 +73,10 @@ class ViewController: UIViewController, WKNavigationDelegate {
         for website in websites {
             ac.addAction(UIAlertAction(title: website, style: .default, handler: openPage))
         }
-        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         //Informa ao IOS onde esta o actionSheet
         ac.popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+        
         present(ac, animated: true)
         
     }
@@ -89,6 +93,27 @@ class ViewController: UIViewController, WKNavigationDelegate {
         title = webView.title
     }
     
+    //Esse metodo tem como finalidade fazer uma verificacao de URL para garantir que o usuario sempre permaneca nos sites listados
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void){
+        //Pega a URL que estava querendo ser acessada
+        let url = navigationAction.request.url
+        
+        //Verifica se ela esta na lista e caso positivo, sera liberada
+        if let host = url?.host {
+            for website in websites {
+                if host.contains(website) {
+                    decisionHandler(.allow)
+                    
+                    //saia do metodo agora
+                    return
+                }
+            }
+        }
+        //cancel loading
+        decisionHandler(.cancel)
+        
+    }
+    
     //Observa a alteracao do valor
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         //Se o estimatedProgress foi alterado, a barra de progresso sera setada com o novo valor
@@ -97,22 +122,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
         }
     }
     
-    //Permite se queremos decidir se a navegacao aconteca ou nao quando um link for clicado, nesse caso sera feita uma analise verificando se a url contem os sites predefinidos no array websites, se sim, pode continuar carregando o link
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        //pega a url do link que foi clicado
-        let url = navigationAction.request.url
-        //faz a verificacao
-        if let host = url?.host {
-            for website in websites {
-                if host.contains(website) {
-                    //manipulador de decisao define o que sera feito, nesse caso sera permitido a navegacao
-                    decisionHandler(.allow)
-                    return
-                }
-            }
-        }
-        decisionHandler(.cancel)
-    }
+   
 
     
     

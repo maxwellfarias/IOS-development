@@ -25,6 +25,7 @@ class ViewController: UITableViewController {
         
         //Define o caminho do diretorio que contem os arquivos principais do programa a fim de encontrar as fotos que estao "soltas" junto com os arquivos principais do app.
         let path = Bundle.main.resourcePath!
+        print("The path contains: " + path)
         
         //items recebera um array de strings contendo os nomes dos arquivos
         let items = try! fm.contentsOfDirectory(atPath: path)

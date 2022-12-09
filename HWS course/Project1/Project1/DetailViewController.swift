@@ -31,21 +31,22 @@ class DetailViewController: UIViewController {
         }
     }
     
-    //Pega o evento de toque a view "aparecendo"
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    //Pega o evento de toque para a imagem da view aparecer"
+        override func viewWillAppear(_ animated: Bool) {
+            super.viewWillAppear(animated)
+            
+            //esconde a barra de menu superior
+            navigationController?.hidesBarsOnTap = true
+        }
         
-        //esconde a barra de menu superior
-        navigationController?.hidesBarsOnTap = true
-    }
+    //Pega o evento de toque para a imagem da view desaparecer/diminuir"
+        override func viewWillDisappear(_ animated: Bool) {
+            super.viewWillDisappear(animated)
+            
+            //mostra a barra de menu superior
+            navigationController?.hidesBarsOnTap = false
+        }
     
-    //Pega o evento de toque a view "desaparecendo"
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        //mostra a barra de menu superior
-        navigationController?.hidesBarsOnTap = false
-    }
     
     //funcao que compartilha a foto
     @objc func shareTapped () {
@@ -65,7 +66,7 @@ class DetailViewController: UIViewController {
         present(vc, animated: true)
         
         /*
-         Quando for clicado e realizado o compartilhamento da foto no app, tera a opcao de 'save image', se for selecioando essa opcao o app gerara um erro, pois o app tentara acessar tentara acessar a biblioteca do usuario para poder gravar a imagem la, mas isso nao eh permitido, a menos que o usuario conceda a permissao primeiro. Para resolver isso eh preciso editar o Info.Plist, adicionando uma linha -> Selecinando Photo 'Privacy - Library Additions Usage Description e no campo value sera colocado a mensagem que sera exibida para o usuario.
+         Quando for clicado e realizado o compartilhamento da foto no app, tera a opcao de 'save image', se for selecioando essa opcao o app gerara um erro, pois o app tentara acessar a biblioteca do usuario para poder gravar a imagem la, mas isso nao eh permitido, a menos que o usuario conceda a permissao primeiro. Para resolver isso eh preciso editar o Info.Plist, adicionando uma linha -> Selecinando Photo 'Privacy - Library Additions Usage Description e no campo value sera colocado a mensagem que sera exibida para o usuario.
          */
     }
 

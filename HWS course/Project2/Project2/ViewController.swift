@@ -94,7 +94,7 @@ class ViewController: UIViewController {
        //Cria o alerta
        let ac = UIAlertController(title: title, message: "Your score is \(score).", preferredStyle: .alert)
        
-       //adiciona o botao de acao ao clicar em 'Continue'. Handlew espera que o nome do metodo que realizara uma acao, metodo precisa obrigatoriamente ter como parametro um 'UIAlertAction!' -> Parte que eu nao entendi: Dizendo que o UIAlertAction foi tocado.
+       //adiciona o botao de acao ao clicar em 'Continue'. Handler espera que o nome do metodo que realizara uma acao, metodo precisa obrigatoriamente ter como parametro um 'UIAlertAction!' -> Parte que eu nao entendi: Dizendo que o UIAlertAction foi tocado.
        ac.addAction(UIAlertAction(title: "Continue", style: .default, handler: askQuestion))
        
        //Mostra o alerta
@@ -121,8 +121,7 @@ class ViewController: UIViewController {
         
         
         title = countries[correctAnswer].uppercased()
-        
-        
+       
     }
     
     func updateScore () {
