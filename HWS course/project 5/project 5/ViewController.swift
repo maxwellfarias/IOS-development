@@ -16,6 +16,7 @@ class ViewController: UITableViewController {
         super.viewDidLoad()
         
         navigationItem.rightBarButtonItem = UIBarButtonItem (barButtonSystemItem: .add, target: self, action: #selector(promptForAnswer))
+        navigationItem.leftBarButtonItem = UIBarButtonItem (title: "Start Game", style: .plain, target: self, action: #selector(startGame))
         
         //take the URL from the start.txt
         if let startWordsURL = Bundle.main.url(forResource: "start", withExtension: "txt") {
@@ -33,7 +34,7 @@ class ViewController: UITableViewController {
         startGame()
     }
     
-    func startGame () {
+    @objc func startGame () {
         title = allWords.randomElement()
         usedWords.removeAll(keepingCapacity: true)
         //forces it to call numberOfRowsInSection again, as well as calling cellForRowAt repeatedly
@@ -67,7 +68,59 @@ class ViewController: UITableViewController {
     }
     
     func submit (_ answer: String) {
-        
+        let lowerAnswer = answer.lowercased()
+
+        if isPossible(word: lowerAnswer) {
+            if isOriginal(word: lowerAnswer) {
+                if isReal(word: lowerAnswer) {
+                    //inserts an element in the first position of the array and pushes the others
+                    usedWords.insert(answer, at: 0)
+                    
+                    //Creating the animation when adding the row
+                    //the row number should equal the position we added the item in the array – position 0, in this case
+                    let indexPath = IndexPath(row: 0, section: 0)
+                    tableView.insertRows(at: [indexPath], with: .automatic)
+                    //return forces Swift to exit the method immediately once the table has been updated
+                    return
+                } else {showErrorMesasage(errorTitle: "Word not recognised", errorMessage: "You can't just make them up, you know!")
+                }
+            } else { showErrorMesasage(errorTitle: "Word used already", errorMessage: "Be more original!")}
+        } else {
+            guard let title = title?.lowercased() else {return}
+            showErrorMesasage(errorTitle: "Word not possible", errorMessage: "You can't spell that word from \(title)")
+        }
+    }
+    
+    func isPossible (word:String) -> Bool {
+        guard var tempWord =  title?.lowercased() else {return false}
+        for letter in word {
+            //Checks if each letter of the word that was typed is in 'tempWord', if so, 'position' will receive the position and the letter will be removed from 'tempWord' in order not to have duplicates
+            if let position = tempWord.firstIndex(of: letter) {
+                tempWord.remove(at: position)
+            } else {return false}
+        }
+        return true
+    }
+    
+    func isOriginal (word:String) -> Bool {
+        return !usedWords.contains(word)
+    }
+    
+    func isReal (word:String) ->Bool {
+        //Class that checks for grammatical errors
+        let checker = UITextChecker()
+        //Class that declares a range and will be used in 'misspelledRange' / word.utf16 was used for compatibility with object-c in order to correctly count string length
+        let range = NSRange(location: 0, length: word.utf16.count)
+        //Retorna um NSRange que sera usado para verificar erros gramaticais do 'word'
+        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+        //'.location' is used to return the index where the grammar error starts, if there is no error, NSNotFound will be returned
+        return misspelledRange.location == NSNotFound
+    }
+    
+   func showErrorMesasage (errorTitle:String, errorMessage:String) {
+       let ac = UIAlertController(title: errorTitle, message: errorMessage, preferredStyle: .alert)
+       ac.addAction(UIAlertAction(title: "Ok", style: .default))
+       present(ac, animated: true)
     }
 
 
