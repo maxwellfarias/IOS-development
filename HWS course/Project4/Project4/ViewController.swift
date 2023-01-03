@@ -23,7 +23,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
         webView.navigationDelegate = self
         
         //view eh a propriedade que faz referencia a view raiz do viewController que agora passara a ser exibida por uma webview
-        view = webView
+        view = webView	    				             
     }
 
     override func viewDidLoad() {
@@ -42,7 +42,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
         
         //Cria uma progressView padrao
         progressView = UIProgressView(progressViewStyle: .default)
-        //Define que o tamanha do progressView se encaixara totalmente no conteudo para caber
+        //Define que o tamanho do progressView se encaixara totalmente no conteudo para caber
         progressView.sizeToFit()
         //Cria um UIBarButtonItem por meio de uma progressView que sera adicionada posteriormente ao barra inferior
         let progressButton = UIBarButtonItem(customView: progressView)
